@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 
-dataset= pd.read_csv(r'C:\Users\shami\Desktop\venv\Weather.csv', low_memory=False)
+dataset= pd.read_csv(r'C:\Users\mmkr5\Desktop\ppp\Machine-Learning\Weather.csv', low_memory=False)
 
 X = dataset[['MinTemp']]
 y = dataset.MaxTemp
