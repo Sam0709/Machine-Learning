@@ -1,34 +1,10 @@
-import numpy as np
-import random
-import pandas as pd
 import copy
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pydotplus
-import PyPDF4
+
 import numpy as np
-import pandas as pd
-import sklearn
-from sklearn.datasets import load_iris
-from sklearn.tree import DecisionTreeClassifier
-from sklearn import tree
-from IPython.display import Image
-import os
 import random
-from drawnow import drawnow
 
-    #first thing is to create the map that you are trying to navigate
-    # second thing is to create the distance between each point. This will also be random.
-    # This will be the fors of a adjacency matrix
-    #In other word, an NxN matrix where each row and column correspond to an intersaction on a map
-    #x_ij, then is equal to the amount of time that it takes to get from position i to position j
-    #could also be considered a distance measure. but whatever is easier to think about.
-    #practically, then we need a matrix that has numeric value in it
-    # there should be some paths that don't exist.  I will assign these a 0.
-    # For instance, if you can't get directly from i to j, then x_ij=0.
-    #the intialization needs some tuning parameters. one is the proportion of o's in the final result.
-
-# Let's make a more complicated map that has at least 10 stops that have to be made and see what happens.
 
 def print_pop(population):
     for i in population:
@@ -45,6 +21,9 @@ def initialize_map(p_zero, N):
                 the_map[j][i] = the_map[i][j]
 
     return the_map
+print(initialize_map(0, 4) )
+
+
 
 
 # Let's make a more complicated map that has at least 10 stops that have to be made and see what happens.
@@ -154,7 +133,7 @@ def create_new_member(the_map):
     N = len(the_map)
 
     route = np.zeros(1, dtype=int)
-
+    print(route)
     go = True
 
     i = 1
@@ -171,111 +150,111 @@ def create_new_member(the_map):
             i += 1
 
     return route
+print(create_new_member(10))
 
-
-def score_population(population, the_map):
-    scores = []
-
-    for i in range(0, len(population)):
-        scores += [fitness(population[i], the_map)]
-
-    return scores
-
-
-def pick_mate(scores):
-    array = np.array(scores)
-    temp = array.argsort()
-    ranks = np.empty_like(temp)
-    ranks[temp] = np.arange(len(array))
-
-    fitness = [len(ranks) - x for x in ranks]
-
-    cum_scores = copy.deepcopy(fitness)
-
-    for i in range(1, len(cum_scores)):
-        cum_scores[i] = fitness[i] + cum_scores[i - 1]
-
-    probs = [x / cum_scores[-1] for x in cum_scores]
-
-    rand = random.random()
-
-    for i in range(0, len(probs)):
-        if rand < probs[i]:
-          return i
-
-
-def main():
-    # parameters
-    sparseness_of_map = 0.95
-    size_of_map = 1000
-    population_size = 30
-    number_of_iterations = 1000
-    number_of_couples = 9
-    number_of_winners_to_keep = 2
-    mutation_probability = 0.05
-    number_of_groups = 1
-
-    # initialize the map and save it
-    the_map = initialize_complex_map(sparseness_of_map, size_of_map, number_of_groups)
-
-    # create the starting population
-    population = create_starting_population(population_size, the_map)
-
-    last_distance = 1000000000
-    # for a large number of iterations do:
-
-    for i in range(0, number_of_iterations):
-        new_population = []
-
-        # evaluate the fitness of the current population
-        scores = score_population(population, the_map)
-
-        best = population[np.argmin(scores)]
-        number_of_moves = len(best)
-        distance = fitness(best, the_map)
-
-        if distance != last_distance:
-            print('Iteration %i: Best so far is %i steps for a distance of %f' % (i, number_of_moves, distance))
-            plot_best(the_map, best, i)
-
-        # allow members of the population to breed based on their relative score;
-        # i.e., if their score is higher they're more likely to breed
-        for j in range(0, number_of_couples):
-            new_1, new_2 = crossover(population[pick_mate(scores)], population[pick_mate(scores)])
-            new_population = new_population + [new_1, new_2]
-
-        # mutate
-        for j in range(0, len(new_population)):
-            new_population[j] = np.copy(mutate(new_population[j], 0.05, the_map))
-
-        # keep members of previous generation
-        new_population += [population[np.argmin(scores)]]
-        for j in range(1, number_of_winners_to_keep):
-            keeper = pick_mate(scores)
-            new_population += [population[keeper]]
-
-        # add new random members
-        while len(new_population) < population_size:
-            new_population += [create_new_member(the_map)]
-
-        # replace the old population with a real copy
-        population = copy.deepcopy(new_population)
-
-        last_distance = distance
-
-    # plot the results
-
-
-def plot_best(the_map, route):
-    ax = sns.heatmap(the_map)
-    x = [0.5] + [x + 0.5 for x in route[0:len(route) - 1]] + [len(the_map) - 0.5]
-    y = [0.5] + [x + 0.5 for x in route[1:len(route)]] + [len(the_map) - 0.5]
-
-    plt.plot(x, y, marker='o', linewidth=4, markersize=12, linestyle="-", color='white')
-
-    # plt.savefig('images/new1000plot_%i.png' % (iteration_number), dpi=300)
-    plt.show(False)
-    plt.draw()
-    plt.pause(8)
-    plt.close()
-print(main())
+# def score_population(population, the_map):
+#     scores = []
+#
+#     for i in range(0, len(population)):
+#         scores += [fitness(population[i], the_map)]
+#
+#     return scores
+#
+#
+# def pick_mate(scores):
+#     array = np.array(scores)
+#     temp = array.argsort()
+#     ranks = np.empty_like(temp)
+#     ranks[temp] = np.arange(len(array))
+#
+#     fitness = [len(ranks) - x for x in ranks]
+#
+#     cum_scores = copy.deepcopy(fitness)
+#
+#     for i in range(1, len(cum_scores)):
+#         cum_scores[i] = fitness[i] + cum_scores[i - 1]
+#
+#     probs = [x / cum_scores[-1] for x in cum_scores]
+#
+#     rand = random.random()
+#
+#     for i in range(0, len(probs)):
+#         if rand < probs[i]:
+#           return i
+#
+#
+# def main():
+#     # parameters
+#     sparseness_of_map = 0.95
+#     size_of_map = 1000
+#     population_size = 30
+#     number_of_iterations = 1000
+#     number_of_couples = 9
+#     number_of_winners_to_keep = 2
+#     mutation_probability = 0.05
+#     number_of_groups = 1
+#
+#     # initialize the map and save it
+#     the_map = initialize_complex_map(sparseness_of_map, size_of_map, number_of_groups)
+#
+#     # create the starting population
+#     population = create_starting_population(population_size, the_map)
+#
+#     last_distance = 1000000000
+#     # for a large number of iterations do:
+#
+#     for i in range(0, number_of_iterations):
+#         new_population = []
+#
+#         # evaluate the fitness of the current population
+#         scores = score_population(population, the_map)
+#
+#         best = population[np.argmin(scores)]
+#         number_of_moves = len(best)
+#         distance = fitness(best, the_map)
+#
+#         if distance != last_distance:
+#             print('Iteration %i: Best so far is %i steps for a distance of %f' % (i, number_of_moves, distance))
+#             plot_best(the_map, best, i)
+#
+#         # allow members of the population to breed based on their relative score;
+#         # i.e., if their score is higher they're more likely to breed
+#         for j in range(0, number_of_couples):
+#             new_1, new_2 = crossover(population[pick_mate(scores)], population[pick_mate(scores)])
+#             new_population = new_population + [new_1, new_2]
+#
+#         # mutate
+#         for j in range(0, len(new_population)):
+#             new_population[j] = np.copy(mutate(new_population[j], 0.05, the_map))
+#
+#         # keep members of previous generation
+#         new_population += [population[np.argmin(scores)]]
+#         for j in range(1, number_of_winners_to_keep):
+#             keeper = pick_mate(scores)
+#             new_population += [population[keeper]]
+#
+#         # add new random members
+#         while len(new_population) < population_size:
+#             new_population += [create_new_member(the_map)]
+#
+#         # replace the old population with a real copy
+#         population = copy.deepcopy(new_population)
+#
+#         last_distance = distance
+#
+#     # plot the results
+#
+#
+# def plot_best(the_map, route):
+#     ax = sns.heatmap(the_map)
+#     x = [0.5] + [x + 0.5 for x in route[0:len(route) - 1]] + [len(the_map) - 0.5]
+#     y = [0.5] + [x + 0.5 for x in route[1:len(route)]] + [len(the_map) - 0.5]
+#
+#     plt.plot(x, y, marker='o', linewidth=4, markersize=12, linestyle="-", color='white')
+#
+#     # plt.savefig('images/new1000plot_%i.png' % (iteration_number), dpi=300)
+#     plt.show(False)
+#     plt.draw()
+#     plt.pause(8)
+#     plt.close()
+# print(main())
